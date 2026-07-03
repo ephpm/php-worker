@@ -1,0 +1,36 @@
+{
+    "name": "ephpm/worker",
+    "description": "Base SDK for ePHPm persistent worker mode — primitives and IDE stubs.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/ephpm/php-worker",
+    "authors": [
+        {
+            "name": "ePHPm"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ephpm\\Worker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ephpm\\Worker\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "ephpm": {
+            "comment": "stubs/ephpm-worker.stub.php is an IDE/static-analysis stub ONLY. It is intentionally NOT listed in autoload.files: at runtime the Ephpm\\Worker\\take_request() / send_response() functions and the Envelope class are provided natively by the ephpm engine, and autoloading the stub would redefine them and fatal. Point your analyzer (PhpStorm, Psalm, PHPStan) at the stubs/ directory instead."
+        }
+    }
+}
