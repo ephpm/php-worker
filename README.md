@@ -21,18 +21,39 @@ namespace Ephpm\Worker;
 
 function take_request(): ?Envelope;                 // blocks; null = shut down
 function send_response(int $status, array $headers, string $body): void;
+function send_response_stream(int $status, array $headers, $body): void; // $body: stream resource
 
 class Envelope {                                    // request data carrier
     public function serverVars(): array;            // $_SERVER-shaped
-    public function headers(): array;               // ['Name' => 'value']
-    public function cookies(): array;
-    public function query(): array;                 // $_GET
-    public function parsedBody(): ?array;           // $_POST or null
-    public function files(): array;                 // $_FILES-shaped
-    public function rawBody(): string;              // php://input
-    public function bodyStream();                   // Phase 1: raw body string
+    public function headers(): array;               // ['Name' => 'value'], duplicates pre-joined with ", "
+    public function cookies(): array;               // split only, NOT url-decoded
+    public function query(): array;                 // split only, NOT url-decoded
+    public function parsedBody(): ?array;           // always null (parsing is an adapter concern)
+    public function files(): array;                 // always empty
+    public function rawBody(): string;              // drains the body into a string
+    public function bodyStream();                   // readable php:// stream resource over the body
 }
 ```
+
+Contract notes:
+
+- Every request taken must be answered by **exactly one**
+  `send_response()`/`send_response_stream()` call.
+- A header value may be a **list array** (e.g. `'Set-Cookie' => [$c1, $c2]`) to
+  emit one wire header per element — the only correct way to send repeated
+  headers. Never comma-join Set-Cookie.
+- `send_response_stream()` streams the resource to the client in 64 KiB chunks
+  with backpressure (flat memory for large downloads); echo output captured
+  before the call is flushed as the first chunk.
+- The request body is consumed **once**, shared between `rawBody()`,
+  `bodyStream()` and PHP's POST reader — read it through only one of them.
+  A stream stashed across requests returns EOF on the next request.
+- `parsedBody()`/`files()` are always `null`/empty: parse the body in your
+  adapter, or enable the `worker_populate_superglobals` config for PHP-native
+  `$_POST`/`$_FILES` population.
+- `exit()`/`die()` mid-request works — the engine synthesizes the response from
+  SAPI headers plus captured echo output and recycles the worker — but pays a
+  full framework reboot per request; prefer `send_response()`.
 
 These symbols are **provided by the ePHPm runtime**, not by this package. That is
 why the stub file (`stubs/ephpm-worker.stub.php`) is **not autoloaded** — loading
