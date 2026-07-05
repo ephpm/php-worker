@@ -8,8 +8,10 @@ namespace Ephpm\Worker;
  * Runtime guard for ePHPm persistent worker mode.
  *
  * The worker primitives — {@see \Ephpm\Worker\take_request()},
- * {@see \Ephpm\Worker\send_response()} and the {@see \Ephpm\Worker\Envelope}
- * class — are registered natively by the ePHPm engine when the server runs
+ * {@see \Ephpm\Worker\send_response()},
+ * {@see \Ephpm\Worker\send_response_stream()} and the
+ * {@see \Ephpm\Worker\Envelope} class — are registered natively by the ePHPm
+ * engine when the server runs
  * with `[php] mode = "worker"`. They do NOT exist when a script is executed by
  * a plain PHP CLI/FPM outside ePHPm.
  *
