@@ -10,6 +10,22 @@ Base SDK for **ePHPm persistent worker mode**. It provides:
 > as [`ephpm/psr15-worker`](https://github.com/ephpm/psr15-worker) instead; it
 > depends on this package.
 
+ePHPm packages are distributed via their GitHub repositories, not Packagist. If
+you do install this base package directly (e.g. for the IDE stubs), add it as a
+Composer `vcs` repository in your app's `composer.json`. `ephpm/worker` is
+tagged `v0.1.0`, so `^0.1` resolves:
+
+```json
+{
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/ephpm/php-worker" }
+  ],
+  "require": {
+    "ephpm/worker": "^0.1"
+  }
+}
+```
+
 ## What worker mode is
 
 When the ePHPm server runs with `[php] mode = "worker"`, it keeps a pool of
