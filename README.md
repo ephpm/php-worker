@@ -29,8 +29,10 @@ tagged `v0.1.0`, so `^0.1` resolves:
 ## What worker mode is
 
 When the ePHPm server runs with `[php] mode = "worker"`, it keeps a pool of
-long-lived PHP worker processes alive and hands each HTTP request to a worker
-via **native** primitives registered by the engine:
+long-lived PHP worker **threads** alive and hands each HTTP request to a worker
+via **native** primitives registered by the engine. (ePHPm is a single process;
+each worker is a ZTS thread the engine owns — not a separate OS process — and the
+pool is sized by `[php] concurrency`.)
 
 ```php
 namespace Ephpm\Worker;
@@ -65,7 +67,7 @@ Contract notes:
   `bodyStream()` and PHP's POST reader — read it through only one of them.
   A stream stashed across requests returns EOF on the next request.
 - `parsedBody()`/`files()` are always `null`/empty: parse the body in your
-  adapter, or enable the `worker_populate_superglobals` config for PHP-native
+  adapter, or enable the `[php.worker] populate_superglobals` config for PHP-native
   `$_POST`/`$_FILES` population.
 - `exit()`/`die()` mid-request works — the engine synthesizes the response from
   SAPI headers plus captured echo output and recycles the worker — but pays a
