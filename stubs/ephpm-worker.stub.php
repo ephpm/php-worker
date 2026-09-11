@@ -142,7 +142,7 @@ class Envelope
     /**
      * Always returns `null`. Form/multipart parsing is an adapter concern —
      * parse {@see rawBody()}/{@see bodyStream()} yourself, or enable the
-     * `worker_populate_superglobals` config option for PHP-native
+     * `[php.worker] populate_superglobals` config option for PHP-native
      * `$_POST`/`$_FILES` population.
      *
      * @return array<string, mixed>|null always null
@@ -153,7 +153,7 @@ class Envelope
 
     /**
      * Always returns an empty array. See {@see parsedBody()} — multipart
-     * parsing is an adapter concern (or the `worker_populate_superglobals`
+     * parsing is an adapter concern (or the `[php.worker] populate_superglobals`
      * config option).
      *
      * @return array<string, mixed> always empty
